@@ -1,9 +1,14 @@
+"""
+ForeignKey demo
+"""
 from sqlalchemy import *
 from sqlalchemy.orm import *
+
 
 engine = create_engine('sqlite:///', echo=True) 
 metadata = MetaData(engine)
 Session = sessionmaker(bind=engine)
+
 
 rocks_table = Table("rocks", metadata,
     Column("id", Integer, primary_key=True),
@@ -11,12 +16,15 @@ rocks_table = Table("rocks", metadata,
     Column("bugid", Integer),
 )
 
+
 bugs_table = Table("bugs", metadata,
     Column("id", Integer, primary_key=True)
 )
 
+
 class Rock(object):
     pass
+    
     
 class Bug(object):
     pass
@@ -30,6 +38,7 @@ mapper(Rock, rocks_table,
                     foreign_keys=[rocks_table.c.bugid]
                     ),
                 })    
+
 
 mapper(Bug, bugs_table)
 
