@@ -1,0 +1,23 @@
+http://dev:8500/order/save?Order={"totalsale":1999,"ordersummary":"Shiny black bedroom set, Modern scroll chair","orderdetails":[{"qtydelivered":0,"qtypicked":0,"saleprice":1999,"lineTotal":1999,"qtyshipped":0,"discount":0,"qtyordered":1,"product":{"description":"Shiny black bedroom set","onorder":6,"sale":2199,"regular":2299,"imageurl":"resources/mockdata/images/furniture_bedroom_set7-t2.jpg","productid":"SHINYBLACKBR","onhand":14,"vendor":"KB"},"lineid":11,"productid":"SHINYBLACKBR"},{"qtydelivered":0,"qtypicked":0,"saleprice":799,"lineTotal":1598,"qtyshipped":0,"discount":0,"qtyordered":2,"product":{"description":"Modern scroll chair","onorder":2,"sale":650,"regular":799,"imageurl":"resources/mockdata/images/furniture_bedroom_set6-t2.jpg","productid":"MODERNSCROLL","onhand":7,"vendor":"BR"},"productid":"MODERNSCROLL"}],"orderid":"SALE35425","orderdate":"2010-01-23 21:44:33","deliverydate":"2010-09-23 21:44:33","customerName":"Veronica Smith","customer":{"customerid":"7","city":"Happytown","zip":"29705","picture_url":"resources/images/blankuser.jpg","state":"SC","lastname":"Smith","address1":"2354 S Knights Rd","phonenumber":"704-745-2734","firstname":"Veronica"}}
+
+
+
+
+http://dev:8500/order/save?Order={"totalsale":1999,"ordersummary":"Shiny black bedroom set, Modern scroll chair","orderdetails":[{"qtydelivered":0,"qtypicked":0,"saleprice":1999,"lineTotal":1999,"qtyshipped":0,"discount":0,"qtyordered":1,"product":{"description":"Shiny black bedroom set","onorder":6,"sale":2199,"regular":2299,"imageurl":"resources/mockdata/images/furniture_bedroom_set7-t2.jpg","productid":"SHINYBLACKBR","onhand":14,"vendor":"KB"},"productid":"SHINYBLACKBR"},{"qtydelivered":0,"qtypicked":0,"saleprice":799,"lineTotal":1598,"qtyshipped":0,"discount":0,"qtyordered":2,"product":{"description":"Modern scroll chair","onorder":2,"sale":650,"regular":799,"imageurl":"resources/mockdata/images/furniture_bedroom_set6-t2.jpg","productid":"MODERNSCROLL","onhand":7,"vendor":"BR"},"productid":"MODERNSCROLL"}],"orderid":"SALE35425","orderdate":"2010-01-23 21:44:33","deliverydate":"2010-09-23 21:44:33","customerName":"Veronica Smith","customer":{"city":"Happytown","zip":"29705","picture_url":"resources/images/blankuser.jpg","state":"SC","lastname":"Smith","address1":"2354 S Knights Rd","phonenumber":"704-745-2734","firstname":"Veronica"}}
+
+
+
+http://dev:8500/order/save?Order={"totalsale":1999,"ordersummary":"Shiny black bedroom set, Modern scroll chair","orderdetails":[{"qtydelivered":0,"qtypicked":0,"saleprice":1999,"lineTotal":1999,"qtyshipped":0,"discount":0,"qtyordered":1,"product":{"description":"Shiny black bedroom set","onorder":6,"sale":2199,"regular":2299,"imageurl":"resources/mockdata/images/furniture_bedroom_set7-t2.jpg","productid":"SHINYBLACKBR","onhand":14,"vendor":"KB"},"productid":"SHINYBLACKBR"},{"qtydelivered":0,"qtypicked":0,"saleprice":799,"lineTotal":1598,"qtyshipped":0,"discount":0,"qtyordered":2,"product":{"description":"Modern scroll chair","onorder":2,"sale":650,"regular":799,"imageurl":"resources/mockdata/images/furniture_bedroom_set6-t2.jpg","productid":"MODERNSCROLL","onhand":7,"vendor":"BR"},"productid":"MODERNSCROLL"}],"deliverydate":"2010-09-23 21:44:33","customerName":"Veronica Smith","customer":{"city":"Happytown","zip":"29705","picture_url":"resources/images/blankuser.jpg","state":"SC","lastname":"Smith","address1":"2354 S Knights Rd","phonenumber":"704-745-2734","firstname":"Veronica"}}
+
+
+
+Line orderid (A) doesn't match orderid (KBORDB)
+http://dev:8500/order/save?Order={"orderid":"KBORDB","orderdetails":[{"orderid":"A","qtyordered":1,"saleprice":555,"productid":"SHINYBLACKBR"}],"sequence":"ABC","orderdate":"2010-02-10 00:00:00","ordersite":"01","deliverydate":"2010-05-15 00:00:00","customer":{"customerid":"MYLA00A","firstname":"Myla","phonenumber":"11"}}
+
+
+
+http://dev:8500/order/save?Order={"orderid":"KBORDB","orderdetails":[{"orderid":"","lineid":1,"qtyordered":1,"saleprice":555,"productid":"SHINYBLACKBR"}],"sequence":"ABC","orderdate":"2010-02-10 00:00:00","ordersite":"01","deliverydate":"2010-05-15 00:00:00","customer":{"customerid":"MYLA00A","firstname":"Myla","phonenumber":"11"}}
+
+
+
+

@@ -1,0 +1,52 @@
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('oracle://arc:arc@localhost:1521/xe?use_ansi=False',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+session = Session()
+
+orders_table = Table("orders", metadata,
+    Column("orderid", Unicode, primary_key=True)
+)
+
+orderdetails_table = Table("orderdetails",metadata,
+    Column("orderid", Unicode, ForeignKey('orders.orderid'), primary_key=True),
+    Column("lineid", Integer, primary_key=True),
+    Column("saleprice", Numeric, nullable=False),
+    Column("qtyordered",Numeric)
+)
+
+class Order(object):
+    pass
+
+class OrderDetail(object):
+    pass
+
+
+order_mapper = mapper(Order, orders_table,
+        properties=dict(orderdetails=relation(OrderDetail, 
+                        cascade='all,delete-orphan', 
+                        single_parent=True,
+                        lazy=False,
+                        backref=backref('parentorder',
+                                cascade='refresh-expire,expunge'))))
+
+# ----------- totalsale -----------
+# note, I needed to add aliases because if you join with these tables in the rest of the query, 
+# we need it to be un-ambiguous
+od_alias=orderdetails_table.alias('od__a')
+order_mapper.add_property('totalsale',
+        # totalsale is an inline view column 
+        column_property(
+        select([func.sum(od_alias.c.qtyordered * od_alias.c.saleprice)],
+            orders_table.c.orderid==od_alias.c.orderid
+        ).label('totalsale')))
+
+
+orderdetail_mapper = mapper(OrderDetail, orderdetails_table)
+
+#metadata.create_all(engine)
+
+o=session.query(Order).all()
+

@@ -1,0 +1,218 @@
+from sqlalchemy import *
+from sqlalchemy.orm import *
+from sqlalchemy.sql.functions import ReturnTypeFromArgs, GenericFunction
+
+engine = create_engine('oracle://arc:arc@localhost:1521/xe?use_ansi=False',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+session = Session()
+
+
+class coalesce(ReturnTypeFromArgs):
+     name = 'coalesce'
+
+@compiles(coalesce)
+def compile_coalesce(element, compiler, **kw):
+     return "coalesce(%s)" % compiler.process(element.clauses)
+     
+@compiles(coalesce, 'oracle')
+def compile_coalesce(element, compiler, **kw):
+    if compiler.dialect.use_ansi:
+        return "coalesce(%s)" % compiler.process(element.clauses)
+    else:
+        sql = "nvl(%s)"
+        clauses = map(compiler.process, element.clauses)
+        for i in xrange(len(clauses) - 2):
+            sql %= "%s, nvl(%%s)" % clauses[i]
+        return sql % ", ".join(clauses[-2:])
+
+
+
+orders_table = Table("orders", metadata,
+    Column("orderid", Unicode(255), primary_key=True,
+        info={'gers_col':'DEL_DOC_NUM', 'gers_fk':True}),
+
+    Column("type", Unicode(255), default=u"RES", nullable=False,
+        info={'gers_col':'ORD_TP_CD'}),
+
+    Column("status", Unicode(255), default=u"O", nullable=False,
+        info={'gers_col':'STAT_CD'}),
+
+    Column("customerid", Unicode(255), 
+        info={'gers_col':'CUST_CD'}),
+
+    Column("ordersiteid", Unicode(255), nullable=False,
+        info={'gers_col':'SO_STORE_CD'}),
+
+    Column("salesperson1", Unicode(255),  
+        info={'gers_col':'SO_EMP_SLSP_CD1'}),
+
+    Column("salesperson2", Unicode(255),
+        info={'gers_col':'SO_EMP_SLSP_CD2'}),
+
+    Column("percentofsale1", Numeric(7,3), default=100,
+        info={'gers_col':'PCT_OF_SALE1'}),
+
+    Column("percentofsale2", Numeric(7,3),
+        info={'gers_col':'PCT_OF_SALE2'}),
+
+    Column("fromsiteid", Unicode(255),
+        info={'gers_col':'PU_DEL_STORE_CD'}),
+
+    Column("deliverytype", Unicode(1), nullable=False, default=u"D",
+        info={'gers_col':'PU_DEL'}),
+
+    Column("mainorder", Unicode(255),  
+        info={'gers_col':'SO_DOC_NUM'}),
+
+    Column("sequence", Unicode(255),    
+        info={'gers_col':'SO_SEQ_NUM'}),
+
+    Column("massclose", Unicode(1), default=u"N",
+        info={'gers_col':'MASF_FLAG'}),
+
+    Column("setupcharge", Numeric(20,2),
+        info={'gers_col':'SETUP_CHG'}),
+
+    Column("tax", Numeric(20,2),
+        info={'gers_col':'TAX_CHG'}),
+
+    Column("deliverycharge", Numeric(20,2),
+        info={'gers_col':'DEL_CHG'}),
+
+    Column("shipfirstname", Unicode(255),
+        info={'gers_col':'SHIP_TO_F_NAME'}),
+
+    Column("shiplastname", Unicode(255),
+        info={'gers_col':'SHIP_TO_L_NAME'}),
+
+    Column("shipaddress1", Unicode(255),
+        info={'gers_col':'SHIP_TO_ADDR1'}),
+
+    Column("shipaddress2", Unicode(255),
+        info={'gers_col':'SHIP_TO_ADDR2'}),
+
+    Column("shipcity", Unicode(255),
+        info={'gers_col':'SHIP_TO_CITY'}),
+
+    Column("shipstate", Unicode(255),
+        info={'gers_col':'SHIP_TO_ST_CD'}),
+
+    Column("shipzip", Unicode(255),
+        info={'gers_col':'SHIP_TO_ZIP_CD'}),
+
+    Column("shipzoneid", Unicode(255),
+        info={'gers_col':'SHIP_TO_ZONE_CD'}),
+
+    Column("shipphonenumber", Unicode(255),
+        info={'gers_col':'SHIP_TO_H_PHONE'}),
+
+    Column("shipbusinessphone", Unicode(255),
+        info={'gers_col':'SHIP_TO_B_PHONE'}),
+
+    Column("shipemail", Unicode(255)),
+
+    info={'gers_schema':'SALES', 'gers_table':'SO'}
+)
+
+
+orderdetails_table = Table("orderdetails",metadata,
+    Column("orderid", Unicode(255), ForeignKey('orders.orderid'), primary_key=True,
+        info={'gers_col':'DEL_DOC_NUM'}),
+
+    Column("lineid", Integer, primary_key=True,
+        info={'gers_col':'DEL_DOC_LN#'}),
+
+    Column("productid", Unicode(255),  nullable=False,
+        info={'gers_col':'ITM_CD'}),
+
+    Column("qtyordered", Numeric(20,2), nullable=False,
+        info={'gers_col':'QTY'}),
+
+    Column("saleprice", Numeric(20,2), nullable=False,
+        info={'gers_col':'UNIT_PRC'}),
+
+    Column("voided", Unicode(1), nullable=False, default=u"N",
+        info={'gers_col':'VOID_FLAG'}),
+
+    Column("fillsiteid", Unicode(255),
+        info={'gers_col':'STORE_CD'}),
+
+    Column("filllocationid", Unicode(255),
+        info={'gers_col':'LOC_CD'}),
+
+    Column("commissiontype", Unicode(255), default=u"REG",
+        info={'gers_col':'COMM_CD'}),
+        
+    Column("spiff", Numeric(20,2),
+        info={'gers_col':'SPIFF'}),
+        
+    Column("originalinventorycost", Numeric(20,2),
+        info={'gers_col':'FIFO_CST'}),
+
+    Column("mainorder", Unicode(255),
+        info={'gers_col':'SO_DOC_NUM'}),
+
+    Column("packageid", Unicode(255), 
+        info={'gers_col':'PKG_SOURCE'}),
+
+    Column("salesperson1", Unicode(255),  
+        info={'gers_col':'SO_EMP_SLSP_CD1'}),
+
+    Column("salesperson2", Unicode(255),
+        info={'gers_col':'SO_EMP_SLSP_CD2'}),
+
+    Column("percentofsale1", Numeric(7,3),
+        info={'gers_col':'PCT_OF_SALE1'}),
+
+    Column("percentofsale2", Numeric(7,3),
+        info={'gers_col':'PCT_OF_SALE2'}),
+
+    Column("picked", Unicode(1), default=u"F",
+        info={'gers_col':'PICKED'}),
+
+    Column("upcharge", Numeric(20,2),
+        info={'gers_col':'UP_CHRG'}),        
+        
+    info={'gers_schema':'SALES', 'gers_table':'SO_LN'}
+)
+
+class Order(object):
+    pass
+
+class OrderDetail(object):
+    pass
+
+order_mapper = mapper(Order, orders_table,
+    properties={'orderdetails': relation(OrderDetail, 
+                    cascade='all,delete-orphan', 
+                    single_parent=True,
+                    lazy=False,
+                    backref=backref('parentorder',
+                            cascade='refresh-expire,expunge'))
+                })
+
+# ----------- totalsale -----------
+# note, I needed to add aliases because if you join with these tables in the rest of the query, 
+# we need it to be un-ambiguous
+od_alias=orderdetails_table.alias('od__a')
+order_mapper.add_property('totalsale',
+    # totalsale is an inline view column 
+    column_property(cast(coalesce(orders_table.c.deliverycharge, text("0")) + 
+        coalesce(orders_table.c.setupcharge, text("0")) + 
+        coalesce(orders_table.c.tax, text("0")) + 
+        select([func.sum(od_alias.c.qtyordered * od_alias.c.saleprice)],
+            and_(orders_table.c.orderid==od_alias.c.orderid, od_alias.c.voided=='N')
+        ), Numeric(20,2)).label('totalsale')))
+
+
+mapper(OrderDetail, orderdetails_table, allow_partial_pks=False)
+
+
+
+
+session.query(Order).all()[0].totalsale
+
+session.query(Order).limit(100).all()[0].totalsale
+
+

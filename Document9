@@ -1,0 +1,386 @@
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('postgres://salespylot:salespylot@localhost:5444/salespylot',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+session = Session()
+
+order_table = Table("orders", metadata,
+    Column("orderid", Unicode, primary_key=True)
+)
+
+orderdetail_table = Table("orderdetails",metadata,
+    Column("orderid", Unicode, ForeignKey('orders.orderid'), primary_key=True),
+    Column("lineid", Integer, primary_key=True),
+    Column("saleprice", Numeric, nullable=False)
+)
+
+class Order(object):
+    pass
+
+class OrderDetail(object):
+    pass
+
+
+order_mapper = mapper(Order, order_table,
+        properties=dict(orderdetails=relation(OrderDetail, 
+                        cascade='all,delete-orphan', 
+                        single_parent=True,
+                        lazy=False,
+                        backref=backref('parentorder',
+                                cascade='refresh-expire,expunge'))))
+
+orderdetail_mapper = mapper(OrderDetail, orderdetail_table,
+        allow_partial_pks=False)
+
+
+o=Order()
+o.orderid = u'SALE35425'
+
+line=OrderDetail()      
+line.orderid = u'SALE35425'
+line.lineid = 2
+
+
+o.orderdetails = [line]
+merged=session.merge(o)
+
+merged.orderdetails[0].saleprice 
+
+
+
+
+
+o=Order()
+o.orderid = u'KBORDC'  #this order exists in the database
+
+line1=OrderDetail()         #line exists in database
+line1.orderid = u'KBORDD'
+line1.lineid = 1
+
+o.orderdetails=[line1]
+
+merged=DBSession.merge(o)
+
+#merged.orderdetails[0].saleprice = 4
+
+DBSession.flush()
+
+
+'UPDATE orderdetails SET orderid=%(orderid)s WHERE orderdetails.orderid = %(orderdetails_orderid)s AND orderdetails.lineid = %(orderdetails_lineid)s' {'orderid': 'KBORDC', 'orderdetails_orderid': 'KBORDD', 'orderdetails_lineid': 1}
+
+
+o=Order()
+o.orderid = u'KBORDC'  #this order exists in the database
+
+line1=OrderDetail()         #line exists in database
+line1.orderid = u'KBORDC'
+line1.lineid = 1
+
+o.orderdetails=[line1]
+
+line1.orderid = u'KBORDD'
+
+merged=DBSession.merge(o)
+
+#merged.orderdetails[0].saleprice = 4
+
+DBSession.flush()
+
+'UPDATE orderdetails SET orderid=%(orderid)s WHERE orderdetails.orderid = %(orderdetails_orderid)s AND orderdetails.lineid = %(orderdetails_lineid)s' {'orderid': 'KBORDC', 'orderdetails_orderid': 'KBORDD', 'orderdetails_lineid': 1}
+'UPDATE orderdetails SET orderid=%(orderid)s WHERE orderdetails.orderid = %(orderdetails_orderid)s AND orderdetails.lineid = %(orderdetails_lineid)s' {'orderid': 'KBORDC', 'orderdetails_orderid': 'KBORDD', 'orderdetails_lineid': 1}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('postgres://salespylot:salespylot@localhost:5444/salespylot',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+DBSession = Session()
+
+order_table = Table("orders", metadata,
+    Column("orderid", Unicode, primary_key=True),
+    Column("type", Unicode)
+)
+
+
+class Order(object):
+    pass
+
+order_mapper = mapper(Order, order_table)
+
+#metadata.create_all(engine)
+
+o=Order()
+o.orderid=u'SALE25863'
+
+DBSession.query(Order).get(u'SALE25863')
+
+
+merged=DBSession.merge(o)
+
+merged.orderid
+merged.type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('oracle://arc:arc@localhost:1521/xe?use_ansi=False',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+session = Session()
+
+order_table = Table("orders", metadata,
+    Column("orderid", Unicode, primary_key=True)
+)
+
+orderdetail_table = Table("orderdetails",metadata,
+    Column("orderid", Unicode, ForeignKey('orders.orderid'), primary_key=True),
+    Column("lineid", Integer, primary_key=True),
+    Column("saleprice", Numeric, nullable=False)
+)
+
+class Order(object):
+    pass
+
+class OrderDetail(object):
+    pass
+
+
+order_mapper = mapper(Order, order_table,
+        properties=dict(orderdetails=relation(OrderDetail, 
+                        cascade='all,delete-orphan', 
+                        single_parent=True,
+                        lazy=False,
+                        backref=backref('parentorder',
+                                cascade='refresh-expire,expunge'))))
+
+orderdetail_mapper = mapper(OrderDetail, orderdetail_table,
+        allow_partial_pks=False)
+
+
+o=Order()
+o.orderid = u'SALE000' # not in database
+
+line=OrderDetail()      
+line.lineid = 1		# not in database
+
+o.orderdetails = [line]
+merged=session.merge(o)
+
+merged.orderdetails[0].saleprice  # <---- referencing this, with allow_partial_pks=False should not go to database
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# SHOW THAT OLD DATA IS USED FOR JOINS  (WELL KNOWN CAVEAT APPARENTLY)
+
+
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('postgres://salespylot:salespylot@localhost:5444/salespylot',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+DBSession = Session()
+
+
+order_table = Table("orders", metadata,
+    Column("orderid", String, primary_key=True),
+    Column("customerid", String(255), ForeignKey('customers.customerid'))
+)
+
+class Order(object):
+    pass
+
+mapper(Order, order_table)
+
+
+customers_table = Table("customers", metadata,
+    Column("customerid", String(255), Sequence('customers_id_seq'), primary_key=True),
+    Column("phonenumber", String(255)),
+    Column("firstname", String(255)),
+    Column("lastname", String(255))
+)
+
+class Customer(object):
+    def __repr__(self):
+        return '<Customer: name=[%s %s] customerid=[%s]>' % (self.firstname, self.lastname, self.customerid)
+
+mapper(Customer, customers_table, 
+        properties={'orders': relation(Order,
+                        cascade='refresh-expire,expunge',
+                        single_parent=True,
+                        backref=backref('customer',
+                            cascade='save-update,merge,refresh-expire,expunge', 
+                            lazy=True))})
+
+
+ord=DBSession.query(Order).get(u'SALE65424')
+
+ord.customerid
+
+ord.customerid = u'8'
+
+ord.customer
+
+
+
+
+
+#SHOW unicode broken with oracle 8:
+
+
+
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('oracle://arc:deveL0p@128.222.9.254:1521/live',echo=True)
+engine.connect()
+print "*****************************"
+print "server_version_info: ", engine.dialect.server_version_info
+print "_supports_char_length: ", engine.dialect._supports_char_length
+print "supports_unicode_binds: ", engine.dialect.supports_unicode_binds
+print "use_ansi:", engine.dialect.use_ansi
+print "*****************************"
+
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+DBSession = Session()
+
+table = Table("tabl", metadata,
+    Column("col", Unicode(255), primary_key=True)
+)
+
+class Record(object):
+    pass
+
+mapper(Record, table)
+
+r=Record()
+r.col = u'Unicode String'
+
+
+metadata.create_all(engine)
+DBSession.add(r)
+DBSession.flush()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*************************************
+from sqlalchemy import *
+from sqlalchemy.orm import *
+
+engine = create_engine('postgres://salespylot:salespylot@localhost:5444/salespylot',echo=True)
+metadata = MetaData()
+Session = sessionmaker(bind=engine)
+DBSession = Session()
+
+
+
+customers_table = Table("customers", metadata,
+    Column("customerid", String(255), Sequence('customers_id_seq'), primary_key=True),
+    Column("phonenumber", String(255)),
+    Column("firstname", String(255)),
+    Column("lastname", String(255))
+)
+
+class Customer(object):
+    def __repr__(self):
+        return '<Customer: name=[%s %s] customerid=[%s]>' % (self.firstname, self.lastname, self.customerid)
+
+mapper(Customer, customers_table)
+
+c=DBSession.query(Customer).get('7')
+
+c.firstname = 'Kent'
+c.firstname
+
+sp_a=DBSession.begin_nested()
+
+c.firstname = 'K-a'
+c.firstname
+
+sp_b=DBSession.begin_nested()
+
+c.firstname = 'K-b'
+c.firstname
+
+sp_c=DBSession.begin_nested()
+
+c.firstname = 'K-c'
+c.firstname
+
+sp_a.rollback()
+
+c.firstname

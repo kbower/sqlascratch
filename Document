@@ -1,0 +1,40 @@
+from sqlalchemy import *
+from sqlalchemy.orm import *
+from zope.sqlalchemy import ZopeTransactionExtension
+
+
+engine = create_engine('postgres://salespylot:salespylot@localhost:5444/salespylot',echo=True)
+metadata = MetaData()
+maker = sessionmaker(bind=engine, autoflush=False, autocommit=False,
+                     extension=ZopeTransactionExtension())
+DBSession = scoped_session(maker)
+
+
+order_table = Table("orders", metadata,
+    Column("orderid", Unicode, primary_key=True),
+    Column("ordersite", Unicode)
+)
+
+
+class Order(object):
+    pass
+
+order_mapper = mapper(Order, order_table)
+
+o=Order()
+o.orderid = u'SALE25863'  #this order exists in the database
+o.ordersite = u'00'
+
+merged=DBSession.merge(o)
+
+# want to do more queries and change more, so set autoflush to False
+DBSession.autoflush = False
+
+#however the following 
+rules=DBSession.query(Order).all()
+
+merged.ordersite=u'AA'
+
+#now is when I really want to do the flush
+DBSession.flush()
+
