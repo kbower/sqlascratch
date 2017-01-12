@@ -3,7 +3,6 @@
 # please refer to http://www.sqlalchemy.org/trac/ticket/2427
 # Author: Iuri Diniz
 import gc
-
 from sqlalchemy import create_engine, Table, __version__
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Unicode, String
@@ -73,7 +72,6 @@ def log_gen(session):
                                  str4="blow", str5="bluw", str6="ahua",
                                  str7="nil", str8="nul")
             session.add(log_entry)
-
         session.flush()
 
 
@@ -86,15 +84,11 @@ def process_gen(session):
         query_set = query_set.filter(filter_by_id)
         query_set = query_set.order_by(LogTable.id)
         query_set.count()
-
         for log_entry in query_set:
             # process log
-            
             #print "PROCESSING: %r" % (log_entry,)
-
             # save last processed log
             last_id.value = unicode(log_entry.id)
-        
         #print "Last ID: %r" %(last_id)
         session.flush()
 
