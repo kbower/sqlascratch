@@ -47,6 +47,7 @@ metadata.create_all()
 
 session = Session()
 
+# create a Bug
 persistentbug=Bug()
 persistentbug.id = 0
 session.add(persistentbug)
@@ -54,6 +55,7 @@ session.commit()
 
 session = Session()
 
+# create a Rock
 rock=Rock()
 rock.id = 0
 rock.bug = session.query(Bug).get(0)
