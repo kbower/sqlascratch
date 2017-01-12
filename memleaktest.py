@@ -30,9 +30,10 @@ class Config(Base):
     def __repr__(self):
         return "%s.%s(id=%r, key=%r, value=%r)" % (
             self.__class__.__module__,
-           self.__class__.__name__,
-           self.id, self.key,
-           self.value)
+            self.__class__.__name__,
+            self.id, self.key,
+            self.value)
+
 
 log_table = Table('log_table', Base.metadata,
     Column('id', Integer, primary_key=True),
@@ -102,14 +103,11 @@ if __name__ == "__main__":
     session = Session()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-
     last_id = Config(key=u"last_id", value=u"1")
     session.add(last_id)
     session.flush()
-
     interation1 = log_gen(session)
-    interation2 = process_gen(session)
-    
+    interation2 = process_gen(session)    
     counts = [0 for i in range(0,10)]
 
     for i in range(0,10):
@@ -120,5 +118,4 @@ if __name__ == "__main__":
         counts[i] = gc_count
 
     leak = all([counts[i] > counts[i-1] for i in range(1,10)])
-
     print "sqlalchemy.__version__ = %s, leak = %r" %(__version__, leak)
