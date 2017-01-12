@@ -27,10 +27,11 @@ class Config(Base):
     value = Column(Unicode(256))
 
     def __repr__(self):
-        return "%s.%s(id=%r, key=%r, value=%r)" % (self.__class__.__module__,
-                                                   self.__class__.__name__,
-                                                   self.id, self.key,
-                                                   self.value)
+        return "%s.%s(id=%r, key=%r, value=%r)" % \
+            (self.__class__.__module__,
+               self.__class__.__name__,
+               self.id, self.key,
+               self.value)
 
 log_table = Table('log_table', Base.metadata,
     Column('id', Integer, primary_key=True),
