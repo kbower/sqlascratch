@@ -19,6 +19,7 @@ engine = create_engine(url)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
+
 class Config(Base):
     __tablename__ = "config"
 
@@ -27,10 +28,11 @@ class Config(Base):
     value = Column(Unicode(256))
 
     def __repr__(self):
-        return "%s.%s(id=%r, key=%r, value=%r)" % (self.__class__.__module__,
-                                                   self.__class__.__name__,
-                                                   self.id, self.key,
-                                                   self.value)
+        return "%s.%s(id=%r, key=%r, value=%r)" % (
+            self.__class__.__module__,
+           self.__class__.__name__,
+           self.id, self.key,
+           self.value)
 
 log_table = Table('log_table', Base.metadata,
     Column('id', Integer, primary_key=True),
@@ -45,6 +47,7 @@ log_table = Table('log_table', Base.metadata,
     Column('str8', String(50)),
 )
 
+
 class LogTable(Base):
     __table__ = log_table
 
@@ -57,6 +60,7 @@ class LogTable(Base):
                  self.str1, self.str2, self.str3,
                  self.str4, self.str5, self.str6,
                  self.str7, self.str8))
+
 
 def log_gen(session):
     while True:
@@ -92,6 +96,7 @@ def process_gen(session):
         
         #print "Last ID: %r" %(last_id)
         session.flush()
+
 
 if __name__ == "__main__":
     session = Session()
