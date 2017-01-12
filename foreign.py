@@ -32,12 +32,13 @@ class Bug(object):
 
 mapper(Rock, rocks_table,
     allow_partial_pks=False,
-    properties={'bug': relationship(Bug,
-                    cascade='refresh-expire,expunge',
-                    primaryjoin=rocks_table.c.bugid==bugs_table.c.id,
-                    foreign_keys=[rocks_table.c.bugid]
-                    ),
-                })    
+    properties={
+        'bug': relationship(Bug,
+            cascade='refresh-expire,expunge',
+            primaryjoin=rocks_table.c.bugid==bugs_table.c.id,
+            foreign_keys=[rocks_table.c.bugid]
+            ),
+        })
 
 
 mapper(Bug, bugs_table)
