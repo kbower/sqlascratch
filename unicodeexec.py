@@ -5,7 +5,8 @@ from sqlalchemy.orm import *
 engine = create_engine('oracle://arc:arc@localhost:1521/xe',echo=True)
 metadata = MetaData(engine)
 
-engine.dialect.convert_unicode = True
+#engine.dialect.convert_unicode = True
+engine.dialect.supports_unicode_binds = False
 
 om = Table("ordermarkers", metadata, 
     Column("markerid", Unicode(255), primary_key=True),
@@ -16,6 +17,7 @@ om = Table("ordermarkers", metadata,
 try:
     s = om.update().values(description=bindparam('b_desc')).where(om.c.markerid==bindparam('b_mid'))
     c = engine.connect()
+    import pdb; pdb.set_trace()
     c.execute(s, b_desc=u'new desc', b_mid=u'KB')
 
 finally:
