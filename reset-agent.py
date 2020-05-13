@@ -1,4 +1,4 @@
-# ticket #9772
+# ticket #9772, mimic jobreport.py, see also connection-close.py
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from zope.sqlalchemy import ZopeTransactionExtension
